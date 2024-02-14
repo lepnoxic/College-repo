@@ -15,7 +15,6 @@ main()
 	struct sockaddr_in serveraddr,clientaddr;
 
 	char buff[MAXSIZE];
-	int a=0;
 	sockfd=socket(AF_INET,SOCK_DGRAM,0);
 
 	if(sockfd==-1)

@@ -1,40 +1,66 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#define POLYNOMIAL 0x80F  // CRC-12 polynomial
 
-#define PORT 8080
-#define BUFFER_SIZE 1024
+unsigned short crc12(char *data, int length) {
+    unsigned short crc = 0;
+    int i, j;
+
+    for (i = 0; i < length; i++) {
+        crc ^= (data[i] << 4);
+        for (j = 0; j < 8; j++) {
+            if (crc & 0x800) {
+                crc ^= (POLYNOMIAL << 1);
+            }
+            crc <<= 1;
+        }
+    }
+
+    return (crc >> 4) & 0xFFF;
+}
 
 int main() {
-    int sockfd;
-    struct sockaddr_in servaddr;
+    // Create TCP socket
+    int client_socket;
+    struct sockaddr_in server_addr;
+    char buffer[1024] = {0};
 
-    // Create socket
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    // Create client socket
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("Socket creation failed");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
-    // Set server information
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(PORT);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_port = htons(8080);
 
     // Connect to server
-    if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
+    if (connect(client_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("Connection failed");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
-    // Binary data to send
-    char binaryData[] = {0b10101010, 0b11001100, 0b11110000, '\0'}; // Example data
+    // Get data from user
+    printf("Enter data to send: ");
+    fgets(buffer, 1024, stdin);
+    buffer[strcspn(buffer, "\n")] = 0; // remove newline character
 
-    // Send data
-    send(sockfd, binaryData, sizeof(binaryData), 0);
+    // Calculate CRC for data
+    unsigned short calculated_crc = crc12(buffer, strlen(buffer));
 
-    close(sockfd);
+    // Send data to server
+    send(client_socket, buffer, strlen(buffer), 0);
+    printf("Sent data: %s\n", buffer);
+
+    // Send CRC to server
+    send(client_socket, &calculated_crc, sizeof(calculated_crc), 0);
+    printf("Sent CRC: %d\n", calculated_crc);
+
+    close(client_socket);
     return 0;
 }

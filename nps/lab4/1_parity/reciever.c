@@ -7,10 +7,12 @@
 #define PORT 8080
 #define BUFFER_SIZE 1024
 
-void printBinary(int num) {
-    printf("0b");
-    for (int i = sizeof(num) * 8 - 1; i >= 0; i--) {
-        printf("%d", (num >> i) & 1);
+void printStringBinary(const char *str) {
+    while (*str) {
+        for (int i = 7; i >= 0; i--) {
+            printf("%d", (*str >> i) & 1);
+        }
+        str++;
     }
     printf("\n");
 }
@@ -50,27 +52,19 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    // Receive data
     unsigned char binaryData[BUFFER_SIZE];
     recv(new_sock, binaryData, BUFFER_SIZE, 0);
+    printStringBinary(binaryData);
     int buffer_len = strlen(binaryData);
-    // Check parity
     int i;
-    for (i = 0; i < buffer_len; i++) {
+    for (int i = 0; i < buffer_len; i++) {
         int count = 0;
-        unsigned char temp = binaryData[i];
-        printf("Current byte ");
-        printBinary(binaryData[i]);
-        while (temp) {
-            count += temp & 1;
-            temp >>= 1;
+        for (int j = 0; j < 8; j++) {
+            if ((binaryData[i] >> j) & 1)
+                count++;
         }
-        if (count % 2 == 0)
-            printf("Byte %d: Even parity\n", i);
-        else
-            printf("Byte %d: Odd parity\n", i);
+        printf("Byte %d: %s parity\n", i, count % 2 == 0 ? "Even" : "Odd");
     }
-
     close(new_sock);
     close(sockfd);
     return 0;
