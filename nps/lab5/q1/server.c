@@ -2,12 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
 #define MAX_CLIENTS 2
-
-void processClient(int clientSocket, struct sockaddr_in clientAddr);
 
 int main() {
     int serverSocket, clientSocket;
@@ -20,11 +18,16 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    int portno;
+    printf("Enter port no: ");
+    scanf("%d", &portno);
+
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(PORT);
+    serverAddr.sin_port = htons(portno);
 
-    if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
+    if (bind(serverSocket, (struct sockaddr *)&serverAddr,
+             sizeof(serverAddr)) == -1) {
         perror("Bind failed");
         exit(EXIT_FAILURE);
     }
@@ -33,61 +36,18 @@ int main() {
         perror("Listen failed");
         exit(EXIT_FAILURE);
     }
+    clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &addrLen);
 
-    printf("Server listening on port %d...\n", PORT);
-
-    while (1) {
-        clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addrLen);
-        if (clientSocket == -1) {
-            perror("Accept failed");
-            exit(EXIT_FAILURE);
-        }
-
-        if (fork() == 0) {
-            close(serverSocket); 
-            processClient(clientSocket, clientAddr);
-            exit(0); 
-        } else {
-            close(clientSocket);
-        }
+    printf("Recieved bytes: ");
+    fflush(stdout);
+    char buffer;
+    
+    while(recv(clientSocket, &buffer, sizeof(buffer), 0)) {
+        printf("%c", buffer);
+        fflush(stdout);
+        sleep(1);
     }
 
     close(serverSocket);
     return 0;
-}
-
-void processClient(int clientSocket, struct sockaddr_in clientAddr) {
-    char buffer[1024];
-	char cmpbuffer[13];
-	char cmpsecbuffer[11];
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-	
-	strcpy(cmpbuffer, buffer);
-	cmpbuffer[12] = '\0';
-
-
-    if (strcmp(cmpbuffer, "Institute Of") == 0) {
-        printf("Received: Institute Of from %s:%d\n",
-               inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
-        FILE *file = fopen("textfile.txt", "a");
-        if (file != NULL) {
-            fprintf(file, "Institute Of ");
-            fclose(file);
-        }
-    } 
-	
-	strcpy(cmpsecbuffer, cmpbuffer);
-	cmpsecbuffer[10] = '\0';
-
-	if (strcmp(cmpsecbuffer, "Technology") == 0) {
-        printf("Received: Technology from %s:%d\n",
-               inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
-        FILE *file = fopen("textfile.txt", "a");
-        if (file != NULL) {
-            fprintf(file, "Technology ");
-            fclose(file);
-        }
-    }
-
-    close(clientSocket);
 }
