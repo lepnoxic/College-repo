@@ -12,7 +12,7 @@
 
 int intervals[] = {1, 2, 3, 5, 6, 8, 11, 12, 15, 16, 19};
 int intervals_len = sizeof(intervals)/sizeof(int);
-char data[] = "Hello world nice day bro, nice\0";
+char data[] = "Hello world nice day bro, nice weather also\0";
 int data_len = (sizeof(data) / sizeof(char)) - 1;
 
 
@@ -39,8 +39,8 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    char bucket[BUCKET_SIZE] = {0}; // Initialize bucket
-    int front = 0; // Initialize front to 0
+    char bucket[BUCKET_SIZE] = {0};
+    int front = 0;
     int back = 0;
 
     int time = 0;
@@ -48,27 +48,32 @@ int main() {
     int data_index = 0;
     int limit = 0;
 
-    while(time <= intervals[intervals_len - 1]) { // Loop till all intervals are processed
-        printf("Current bucket: [");
-        for (int i = 0; i < strlen(bucket); i++) {
-            printf("%c, ", bucket[i]);
-        }
-        printf("]\n");
+    while(time <= intervals[intervals_len - 1] || front != back) { 
+        printf("Current time: %d\n", time);
 
         if (current_index < intervals_len && time == intervals[current_index] && limit < data_len) {
             // Push into bucket
             limit = data_index + INPUT_RATE;
-            for (int i = data_index; i < limit && back < BUCKET_SIZE; i++)
-                bucket[back++ % BUCKET_SIZE] = data[i];
+            for (int i = data_index; i < limit && i < data_len; i++)
+                if (back - front < BUCKET_SIZE) {
+                    bucket[back++ % BUCKET_SIZE] = data[i];
+                } else {
+                    printf("Nonconforming packet: %c\n", data[i]);
+                }
             data_index = limit;
             current_index++;
         }
 
         if (front != back) {
+            printf("Current bucket: [");
+            for (int i = front; i < back; i++) {
+                printf("%c, ", bucket[i % BUCKET_SIZE]);
+            }
+            printf("]\n");
             // Pop from bucket and send
             int send_size = (back - front) > OUTPUT_RATE ? OUTPUT_RATE : (back - front);
             send(clientSocket, &bucket[front % BUCKET_SIZE], send_size, 0);
-            front += OUTPUT_RATE;
+            front += send_size; // Update front after sending data
         } else {
             printf("Bucket empty\n");
         }

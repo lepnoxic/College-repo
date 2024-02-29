@@ -29,10 +29,8 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    // Binary data to send
-    char binaryData[] = {0b10101010, 0b11001100, 0b11110000, '\0'}; // Example data
+    char binaryData[] = {0b10101010, 0b11001100, 0b11110000, '\0'}; 
 
-    // Send data
     send(sockfd, binaryData, sizeof(binaryData), 0);
 
     close(sockfd);
