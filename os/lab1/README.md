@@ -158,7 +158,7 @@ OS_Lab1.pdf
   - rmdir (-r, -f)
   - find (-name, -type)
 3. List all the file names satisfying following criteria
-  a. has the extension .txt.
-  b. containing atleast one digit.
-  c. having minimum length of 4.
-  d. does not contain any of the vowels as the start letter.
+  - has the extension .txt.
+  - containing atleast one digit.
+  - having minimum length of 4.
+  - does not contain any of the vowels as the start letter.
