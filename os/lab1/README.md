@@ -149,8 +149,7 @@ lab1/README.md
 OS_Lab1.pdf
 ```
 
-2. Explore the following commands along with their various options. (Some of the op-
-tions are specified in the bracket)
+2. Explore the following commands along with their various options. (Some of the options are specified in the bracket)
   - cat (variation used to create a new file and append to existing file)
   - head and tail (-n, -c )
   - cp (-n, -i, -f)
