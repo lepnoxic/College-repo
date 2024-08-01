@@ -3,16 +3,51 @@
 * Execute all the commands explained in this section and write the output.
   * grep
     ```
-    $ ls cat cd
+    $ cat something.txt
+    ini mini maini mo
+    hello world
+    $ grep world something.txt
+    hello world
     ```
   * sort
+    ```
+    $ sort something.txt
+    hello world
+    ini mini maini mo
+    ```
   * wc
   * cut
   * sed
   * tr
+    ```
+    $ echo "hello world" | tr 'a-z' 'A-Z'
+    HELLO WORLD
+    ```
   * ps
+    ```
+    $ ps
+      PID TTY          TIME CMD
+     2919 pts/0    00:00:00 bash
+     3962 pts/0    00:00:00 ps
+    ```
   * kill
+    ```
+    $ cat - &
+    [1] 4006
+    $ kill -9 4006
+
+    [1]+  Stopped                 cat -
+    [1]+  Killed                  cat -
+    ```
   * chmod
+    ```
+    $ echo "echo 'script successful'" > myscript.sh
+    $ ./myscript.sh
+    bash: ./myscript.sh: Permission denied
+    $ chmod +x ./myscript.sh 
+    $ ./myscript.sh 
+    script successful
+    ```
   * echo
   * bc
   * vi
