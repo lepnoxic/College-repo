@@ -1,6 +1,11 @@
-import string
-lowercase_alpha = string.ascii_lowercase
-uppercase_alpha = string.ascii_uppercase
+lowercase_alpha = "abcdefghijklmnopqrstuvwxyz"
+uppercase_alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+def gcd(a : int, b : int):
+    while(b):
+        a, b = b, a % b
+    return abs(a)
+
 
 def additive_encrypt(message : str, key : int):
     cipher = ""
@@ -35,7 +40,9 @@ def multiplicative_encrypt(message : str, key : int):
             cipher += i
     return cipher
 
-def multiplicative_decrypt(cipher : str, key : int):
+def multiplicative_decrypt(cipher : str, key : int) -> str:
+    assert gcd(len(cipher), key) == 1, "Inverse is invalid"
+
     message = ""
     for i in cipher:
         if i.islower():
@@ -58,6 +65,8 @@ def affine_encrypt(message : str, a : int, b: int):
     return cipher
 
 def affine_decrypt(cipher : str, a : int, b : int):
+    assert gcd(len(cipher), a) == 1, "Inverse is invalid"
+
     message = ""
     for i in cipher:
         if i.islower():

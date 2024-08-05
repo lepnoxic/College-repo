@@ -1,7 +1,5 @@
-import string
-
-lowercase_alpha = string.ascii_lowercase
-uppercase_alpha = string.ascii_uppercase
+lowercase_alpha = "abcdefghijklmnopqrstuvwxyz"
+uppercase_alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 def vignere_encrypt(message: str, key: str) -> str:
     cipher = []
