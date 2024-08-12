@@ -1,8 +1,5 @@
-lowercase_alpha = "abcdefghijklmnopqrstuvwxyz"
+# Playfair cipher
 uppercase_alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-message = "The key is hidden under the door padd".replace(" ", "").upper()
-key = "GUIDANCE"
 ignore = 'X'
 bogus = 'Z'
 
@@ -78,6 +75,9 @@ def decrypt(cipher, key):
             message += table[a][d]
             message += table[c][b]
     return message
+
+message = "The key is hidden under the door padd".replace(" ", "").upper()
+key = "GUIDANCE"
 
 print(message)
 print(encrypt(message=message, key=key))
