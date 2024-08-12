@@ -16,12 +16,11 @@ def decrypt_aes(key: str, encrypted_data: str) -> str:
     padded_data = cipher.decrypt(encrypted_data_bytes)
     return unpad(padded_data, AES.block_size).decode('utf-8')
 
-if __name__ == "__main__":
-    key = "0123456789ABCDEF0123456789ABCDEF"  # 32 hex chars = 16 bytes
-    plaintext = "Sensitive Information"
+key = "0123456789ABCDEF0123456789ABCDEF"  # 32 hex chars = 16 bytes
+plaintext = "Sensitive Information"
 
-    encrypted = encrypt_aes(key, plaintext)
-    print(f"Encrypted: {encrypted}")
+encrypted = encrypt_aes(key, plaintext)
+print(f"Encrypted: {encrypted}")
 
-    decrypted = decrypt_aes(key, encrypted)
-    print(f"Decrypted: {decrypted}")
+decrypted = decrypt_aes(key, encrypted)
+print(f"Decrypted: {decrypted}")
